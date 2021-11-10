@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const roomSchema = new Schema({
     Room_Id:{
-        type: Number,
+        type: String,
         unique: true,
         required:true
     },
@@ -33,10 +33,10 @@ const roomSchema = new Schema({
         default:"unbooked"
     },
     Create_By:{
-        type:Number,
-        required:<i class="fas fa-truck-monster    "></i>
+        type:String,
+        required:true
     }
 
    
 })
-module.exports = mongoose.model('rooms',userSchema)
+module.exports = mongoose.model('rooms',roomSchema)

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const userSchema = new Schema({
     userID:{
-        type: Number,
+        type: String,
         unique: true,
         required:true
     },
@@ -20,7 +20,15 @@ const userSchema = new Schema({
         required: true
     },
     Email:{
-        type: mongoose.SchemaType.Email,
+        type: String,
+        required: true
+    },
+    Account:{
+        type:String,
+        required:true
+    },
+    Password:{
+        type:String,
         required: true
     }
 })
