@@ -26,9 +26,9 @@ router.get('/',(req,res)=>{
 createadmin()*/
 
 router.post('/login',async (req,res)=>{
-    const {Account,password}= req.body
+    const {Account,Password}= req.body
     
-    if(!Account||!password)
+    if(!Account||!Password)
     {
         return res.status(400).json({success:false,message:"Missing user name or password"})
     }
@@ -39,7 +39,7 @@ router.post('/login',async (req,res)=>{
         {
             return res.status(400).json({success:false,message:'Incorrect user name or password'})
         }
-        const passwordValid = await argon2.verify(User.Password,password)
+        const passwordValid = await argon2.verify(User.Password,Password)
         if(!passwordValid)
         {
             return res.status(400).json({success:false,message:'Incorrect user name or password'})
