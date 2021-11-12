@@ -3,10 +3,6 @@ const router = express.Router();
 const user = require('../model/user')
 const argon2 = require('argon2')
 const verifyToken = require('../middleware/authadmin')
-router.get('/',async (req,res)=>{
-    await user.updateOne({userID:"EMP_02"},{Phone:"akjsdhflaksjdas"})
-    res.json({success:true,message:"Create user successfully"})
-})
 //Create new user 
 router.post('/',verifyToken,async (req,res)=>{
     const {userID,Type,Name,Phone,Email,Account,Password} = req.body
@@ -29,7 +25,7 @@ router.post('/',verifyToken,async (req,res)=>{
     }
 })
 //delete user
-router.delete('/', async(req,res)=>{
+router.delete('/',verifyToken, async(req,res)=>{
     const {userID} = req.body
     try{
         await user.findOneAndDelete({userID})
@@ -42,7 +38,7 @@ router.delete('/', async(req,res)=>{
 })
 
 //update user infomation
-router.patch('/', async(req,res)=>{
+router.patch('/',verifyToken, async(req,res)=>{
     const {userID} = req.body
     try 
     {
