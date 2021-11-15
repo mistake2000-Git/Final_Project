@@ -29,4 +29,8 @@ app.use(express.json())
 app.use('/api/auth',authRouter)
 const manageRouter = require(__dirname+'/routes/manage')
 app.use('/api/manage',manageRouter)
+const roomRouter = require(__dirname+'/routes/room')
+app.use('/api/room',roomRouter)
 
+const transRouter = require(__dirname+'/routes/trans')
+app.use('/api/trans',transRouter)

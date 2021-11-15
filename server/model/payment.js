@@ -1,41 +1,37 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
-const roomSchema = new Schema({
-    Room_Id:{
+const paymentSchema = new Schema({
+    Payment_Id:{
         type: String,
         unique: true,
         required:true
     },
-    Room_Num:{
+    User_Id:
+    {
         type: String,
         required: true
     },
-    Room_Name:{
+    Payment_method:
+    {
         type:String,
         required:true
     },
-    Price_per_Hour:{
+    Payment_Status:{
+        type:String,
+        required:true
+    },
+    Total:{
         type:Number,
+        required:true
+    },
+    Create_Date:{
+        type:Date,
         required: true
-    },
-    Price_per_Night:{
-        type:Number,
-        required:true,
-    },
-    Price_per_Day:{
-        type:Number,
-        required:true
-    },
-    Status:{
-        type:String,
-        default:"unbooked"
     },
     Create_By:{
         type:String,
         required:true
-    }
-
-   
+    } 
 })
-module.exports = mongoose.model('rooms',roomSchema)
+module.exports = mongoose.model('payment',paymentSchema)

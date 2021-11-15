@@ -11,7 +11,7 @@ const transSchema = new Schema({
         type: String,
         required: true
     },
-    Room_Name:{
+    Room_Num:{
         type:String,
         required:true
     },
@@ -27,24 +27,19 @@ const transSchema = new Schema({
         type:Date,
         default:Date.now()
     },
-    Payment_Method:
+    Payment_Id:
     {
         type:String,
-        default:"Cash"
-    },
-    Total:{
-        type:Number,
-        required:true
+        required:true,
+        default:null
     },
     Status:{
         type:String,
-        default:"unpaid"
+        default:"uncheck-in"
     },
     Last_Update_Id:{
         type:String,
         required:true
     }
-    
-   
 })
 module.exports = mongoose.model('trans',transSchema)
