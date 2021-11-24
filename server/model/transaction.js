@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
-
+require('mongoose-moment')(mongoose);
 const transSchema = new Schema({
     Trans_Id:{
-        type: Number,
+        type: String,
         unique: true,
         required:true
     },
-    User_Id:{
+    Customer_Id:{
         type: String,
         required: true
     },
@@ -15,7 +15,7 @@ const transSchema = new Schema({
         type:String,
         required:true
     },
-    Star_Date:{
+    Start_Date:{
         type:Date,
         default: Date.now()
     },
@@ -24,13 +24,12 @@ const transSchema = new Schema({
         required:true
     },
     Create_Date:{
-        type:Date,
-        default:Date.now()
+        type:Date, 
+        default: Date.now()  
     },
     Payment_Id:
     {
         type:String,
-        required:true,
         default:null
     },
     Status:{

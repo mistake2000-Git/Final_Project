@@ -10,7 +10,6 @@ const verifyToken = (req,res,next)=>{
     try
     {
         const decode = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-
         req._id = decode.userId
         next()
     }
@@ -21,4 +20,4 @@ const verifyToken = (req,res,next)=>{
     }
 }
 
-module.exports = verifyToken
+module.exports = verifyToken    
