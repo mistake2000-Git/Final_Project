@@ -6,6 +6,20 @@ const verifyToken = require('../middleware/authadmin')
 const autoId = require('../middleware/autoId')
 const { create } = require('../model/room')
 
+
+//Get all room
+router.get('/',async (req,res)=>{
+    try
+    {
+        const Room = await room.find()
+        res.json(Room)
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Internal Error"})
+    }
+})
 //Add new room
 router.post('/',verifyToken, async (req,res)=>{
     const {Room_Num,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status}= req.body

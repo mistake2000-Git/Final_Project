@@ -3,6 +3,20 @@ const router = express.Router();
 const user = require('../model/user')
 const argon2 = require('argon2')
 const verifyToken = require('../middleware/authadmin')
+
+//Get all user
+router.get('/',async (req,res)=>{
+    try
+    {
+        const User = await user.find()
+        res.json(User)
+    }
+    catch(err)
+    {
+        console.log(err)
+        res.status(400).json({success:false,message:"Internal Error"})
+    }
+})
 //Create new user 
 router.post('/',verifyToken,async (req,res)=>{
     const {userID,Type,Name,Phone,Email,Account,Password} = req.body
