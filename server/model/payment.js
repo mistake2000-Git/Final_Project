@@ -7,7 +7,7 @@ const paymentSchema = new Schema({
         unique: true,
         required:true
     },
-    User_Id:
+    Customer_Id:
     {
         type: String,
         required: true
@@ -15,18 +15,22 @@ const paymentSchema = new Schema({
     Payment_method:
     {
         type:String,
+        default:"Cash",
         required:true
     },
     Payment_Status:{
         type:String,
+        default:"Unpaid",
         required:true
     },
     Total:{
         type:Number,
+        default:0,
         required:true
     },
     Create_Date:{
         type:Date,
+        default:Date.now(),
         required: true
     },
     Create_By:{

@@ -70,6 +70,46 @@ router.patch('/',verifyToken, async(req,res)=>{
     }
 })
 
+// Check room are available between two date
+router.get('/checkRoom',verifyToken,async(req,res)=>{
+    const {Start_Date,End_Date} = req.body
+    try
+    {
+        const Room = await room.find({},{Room_Num:1,_id:0})
+        const arrayRoom = Object.values(Room)
+        let arrayValidRoom = []
+        for(let i=0;i<arrayRoom.length;i++)
+        {
+            let checkRoom = await trans.find(
+                {$or:[
+                    {$and:
+                    [{Room_Num:arrayRoom[i]},
+                        {$or: [{Start_Date:{$lte: new Date(Start_Date)}},{End_Date:{$gte: new Date(Start_Date)}}]}]},
+                    {$and:
+                    [{Room_Num:arrayRoom[i]},
+                        {$or: [{Start_Date:{$lte: new Date(End_Date)}},{End_Date:{$gte: new Date(End_Date)}}]}]}
+                    ]
+                    })
+            if(checkRoom.length==0)
+            {
+                arrayValidRoom[i]=arrayRoom[i]
+            }
+        }
+        if(arrayValidRoom.length>0)
+        {
+            return res.json({success:true,message:"List of room available has been sent",listRoom:arrayValidRoom})
+        }
+        else
+        {
+            return res.json({success:false,message:"There are no room available"})
+        }
 
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Internal Error"})
+    }
+})
 
 module.exports= router

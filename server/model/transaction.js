@@ -34,7 +34,7 @@ const transSchema = new Schema({
     },
     Status:{
         type:String,
-        default:"uncheck-in"
+        default:"Uncheck-in"
     },
     Last_Update_Id:{
         type:String,
