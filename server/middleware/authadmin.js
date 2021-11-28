@@ -12,12 +12,12 @@ const verifyToken = async (req,res,next)=>{
     try
     {
         const decode = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-        const adminCheck = await user.findOne({_id:decode.userId})
+        const adminCheck = await user.findOne({_id:decode.id})
         if(adminCheck.Type !== "Admin")
         {
             return res.json({success:false,message:"You are not allow to access"})
         }
-        req._id = decode.userId
+        req._id = decode.id
         next()
     }
     catch(error)

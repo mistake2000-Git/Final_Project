@@ -95,12 +95,12 @@ async function autoId (typeId)
                 else if(countPay< 10)
                 {
                     countPay++
-                    newId = "TRANS_0" + countPay
+                    newId = "PAY_0" + countPay
                 }
                 else
                 {
                     countPay++
-                    newId = "TRANS_" + countPay
+                    newId = "PAY_" + countPay
                 }
                 return newId
         }

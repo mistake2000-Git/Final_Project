@@ -8,12 +8,12 @@ require('dotenv').config()
 router.get('/',(req,res)=>{
     res.send('hellowr')
 })
-//Initial admin
-/*const createadmin = async ()=>{
+/*Initial admin
+const createadmin = async ()=>{
         const adpassword = "password"
         const adminpassword = await argon2.hash(adpassword)
         const useradmin = new user({
-        userID:"AD_01",
+        id:"AD_01",
         Type:"Admin",
         Name:"Tan Loc",
         Phone:"0344254080",
@@ -44,12 +44,13 @@ router.post('/login',async (req,res)=>{
         {
             return res.status(400).json({success:false,message:'Incorrect user name or password'})
         }
-        const accessToken = jwt.sign({userId:User._id,},process.env.ACCESS_TOKEN_SECRET)
+        const accessToken = jwt.sign({id:User._id,},process.env.ACCESS_TOKEN_SECRET)
         res.json(
             {
                 success:true,
                 message:'User login successfully',
-                accessToken
+                accessToken,
+                UserType:User.Type
             }
         )
     }

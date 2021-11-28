@@ -2,10 +2,26 @@ const express = require('express')
 const router = express.Router();
 const user = require('../model/user')
 const argon2 = require('argon2')
-const verifyToken = require('../middleware/authadmin')
-
+const verifyToken = require('../middleware/authadmin');
+const autoId = require('../middleware/autoId');
+//Get one user
+router.get('/getone',async(req,res)=>{
+    const {id} = req.body
+    try{
+        const User = await user.findOne({id})
+        if(user)
+            return res.json(User)
+        else
+            throw new Error()
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Can not find user or internal error!"})
+    }
+})
 //Get all user
-router.get('/',async (req,res)=>{
+router.get('/',verifyToken,async (req,res)=>{
     try
     {
         const User = await user.find()
@@ -19,7 +35,7 @@ router.get('/',async (req,res)=>{
 })
 //Create new user 
 router.post('/',verifyToken,async (req,res)=>{
-    const {userID,Type,Name,Phone,Email,Account,Password} = req.body
+    const {id,Type,Name,Phone,Gender,Date_of_Birth,Address,Email,Account,Password} = req.body
     try
     {
         const checkAccount = await user.findOne({Account})
@@ -29,20 +45,22 @@ router.post('/',verifyToken,async (req,res)=>{
         }
 
         const passwordHash = await argon2.hash(req.body.Password)
-        const User = new user({userID,Type,Name,Phone,Email,Account,Password:passwordHash})
+        let newId = autoId(Type)
+        const User = new user({id:newId,Type,Name,Gender,Date_of_Birth,Address,Phone,Email,Account,Password:passwordHash})
         await User.save()
         res.json({success:true,message:"Create user successfully",User: User})
     }
     catch(error)
     {
-        res.json({success:false,message:"User Name or ID is already exist"})
+        console.log(error.message)
+        res.json({success:false,message:"User Name or id is already exist"})
     }
 })
 //delete user
 router.delete('/',verifyToken, async(req,res)=>{
-    const {userID} = req.body
+    const {id} = req.body
     try{
-        await user.findOneAndDelete({userID})
+        await user.findOneAndDelete({id})
         res.json({success:true,message:"User has been deleted"})
     }
     catch(err)
@@ -53,10 +71,10 @@ router.delete('/',verifyToken, async(req,res)=>{
 
 //update user infomation
 router.patch('/',verifyToken, async(req,res)=>{
-    const {userID} = req.body
+    const {id} = req.body
     try 
     {
-        const User = await user.findOne({userID})
+        const User = await user.findOne({id})
         if(!User)
         {
             return res.status(400).json({success:false,message:"Can not find the user to update"})
@@ -67,7 +85,7 @@ router.patch('/',verifyToken, async(req,res)=>{
         {
             let property = userProperty[i]
             let values = userValues[i]
-            let filter = {userID}
+            let filter = {id}
             let update = {property:values}
             update[property] = update['property']
             await user.updateOne(filter,update)
@@ -76,7 +94,7 @@ router.patch('/',verifyToken, async(req,res)=>{
     }
     catch(err)
     {
-        res.json({message:false,message:"Can not find the user or userID input is empty!"})
+        res.json({message:false,message:"Can not find the user or id input is empty!"})
     }
 })
 

@@ -2,6 +2,7 @@ const express =  require('express')
 const router = express.Router()
 const room = require('../model/room')
 const user = require('../model/user')
+const trans = require('../model/transaction')
 const verifyToken = require('../middleware/authadmin')
 const autoId = require('../middleware/autoId')
 const { create } = require('../model/room')
@@ -26,7 +27,7 @@ router.post('/',verifyToken, async (req,res)=>{
     try 
     {
         const findUser = await user.findOne({_id:req._id})
-        idUserCreate = findUser.userID
+        idUserCreate = findUser.id
         const newRoom = new room({Room_Num,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status,Create_By:idUserCreate})
         await newRoom.save()
         res.json({success:true,message:"Create Room successfully"})
@@ -34,7 +35,7 @@ router.post('/',verifyToken, async (req,res)=>{
     catch(err)
     {
         console.log(err.message)
-        res.status(400).json({success:false,message:"Room ID existing "})
+        res.status(400).json({success:false,message:"Room id existing "})
     }
 })
 
@@ -80,7 +81,7 @@ router.patch('/',verifyToken, async(req,res)=>{
     }
     catch(err)
     {
-        res.status(400).json({message:false,message:"Can not find the user or userID input is empty!"})
+        res.status(400).json({message:false,message:"Can not find the user or id input is empty!"})
     }
 })
 
@@ -90,7 +91,9 @@ router.get('/checkRoom',verifyToken,async(req,res)=>{
     try
     {
         const Room = await room.find({},{Room_Num:1,_id:0})
+        console.log(Room)
         const arrayRoom = Object.values(Room)
+        console.log(arrayRoom)
         let arrayValidRoom = []
         for(let i=0;i<arrayRoom.length;i++)
         {

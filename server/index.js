@@ -6,6 +6,8 @@ const authRouter = require(__dirname+'/routes/auth')
 const URL = 'mongodb+srv://admin:cRH5G-9%21%23AX8c9%24@webapp.mfwqf.mongodb.net/Hotel_Management?authSource=admin&replicaSet=atlas-angb4h-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
 const PORT = process.env.PORT||5000
 const app=express()
+const cors = require('cors')
+app.use(cors())
 const connectDB = async () => {
     try {
       await mongoose.connect(
