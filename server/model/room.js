@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const roomSchema = new Schema({
     
-    Room_Num:{
+    id:{
         unique:true,
         type: String,
         required: true

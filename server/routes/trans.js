@@ -13,7 +13,7 @@ const transaction = require('../model/transaction')
 
 //create transaction
 router.post('/',verifyToken,async (req,res) => {
-    const {Customer_Id,Room_Num,Start_Date,End_Date}=req.body
+    const {Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date,End_Date}=req.body
     try
     {
         //check room available
@@ -29,10 +29,19 @@ router.post('/',verifyToken,async (req,res) => {
         //All good
         //Get new id for transaction
         const newTransId = await autoId('Transaction')
+      
         //create transaction
         const newStartDate = Start_Date+" 2:00:00 PM"
         const newEndDate = End_Date+" 12:00:00 AM"
-        const newTrans = new trans ({Trans_Id:newTransId,Customer_Id,Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:findUser.id})
+        
+        /*const Customer = await customer.findOne({Customer_Id_Card})
+        if(!Customer)
+        {
+            var newCusId = await autoId('Customer')
+            const newCustomer = new customer({Customer_Id:newCusId,Customer_Name,Phone_Number})
+        }*/
+        const newTrans = new trans ({
+        Trans_Id:newTransId,Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:findUser.id})
         await newTrans.save()
         await room.findOneAndUpdate({Room_Num},{Status:"Booked"})
         res.json({success:true,message:"Create transaction successfully!"})
@@ -86,24 +95,12 @@ router.delete('/',verifyToken,async (req,res)=>{
 router.get('/',verifyToken, async (req,res)=>{
     try
     {
-        /*let transList = await trans.find()
-        let transaction = []
-        const key = Object.keys(transList[0])
-        /*for(let i=0;i<transList.length;i++)
+        const transList = await trans.find()
+        if(transList)
         {
-            let temp = new Object()
-            for(let j = 0;j<key.length;j++)
-            {
-                if(key[j]==='Star_Date'||key[j]==='End_Date'||key[j]==='Create_Date')
-                    temp.key[j] = transList[i].key.toLocaleString()
-                else
-                    temp.key[j] = transList[i].key
-            }
-            transaction.push(temp)
+            return res.json(transList)
         }
-        console.log(key)
-        console.log(transList[0].Start_Date)
-        res.json(transList[1].Start_Date)*/
+        else throw new Error()
     }
     catch(err)
     {
@@ -156,7 +153,7 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
 
 
 //Show payment of customer
-router.patch('/payment',async (req,res)=>{
+router.patch('/payment',verifyToken,async (req,res)=>{
     const {Trans_Id,Room_Num,Payment_Id,Start_Date,End_Date,CostIncurr} = req.body
     try
     {

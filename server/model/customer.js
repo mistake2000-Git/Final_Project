@@ -14,7 +14,10 @@ const customerSchema = new Schema({
     Phone:{
         type:String,
         unique:true,
-        required: true
+    },
+    Customer_ID_Card:{
+        type:Number,
+        unique:true
     },
     Email:{
         type: String,

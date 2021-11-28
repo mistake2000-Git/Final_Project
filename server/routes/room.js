@@ -86,35 +86,33 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Check room are available between two date
-router.get('/checkRoom',verifyToken,async(req,res)=>{
+router.patch('/checkRoom',async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
     {
-        const Room = await room.find({},{Room_Num:1,_id:0})
-        console.log(Room)
-        const arrayRoom = Object.values(Room)
-        console.log(arrayRoom)
+        const Room = await room.find({},{_id:0})
+        let startDate = Start_Date+" 02:00:00 PM"
+        startDate = new Date(startDate)
+        let endDate = End_Date+" 12:00:00 AM"
+        endDate = new Date(endDate)
         let arrayValidRoom = []
-        for(let i=0;i<arrayRoom.length;i++)
+        for(let i=0;i<Room.length;i++)
         {
-            let checkRoom = await trans.find(
-                {$or:[
-                    {$and:
-                    [{Room_Num:arrayRoom[i]},
-                        {$or: [{Start_Date:{$lte: new Date(Start_Date)}},{End_Date:{$gte: new Date(Start_Date)}}]}]},
-                    {$and:
-                    [{Room_Num:arrayRoom[i]},
-                        {$or: [{Start_Date:{$lte: new Date(End_Date)}},{End_Date:{$gte: new Date(End_Date)}}]}]}
-                    ]
-                    })
-            if(checkRoom.length==0)
+            let checkRoomInTwoDate = await trans.find({$and:[{$not:{Status:"Checked-out"}},{$and:[{Room_Num:Room[i].Room_Num},
+                {$or:[{$and:[{Start_Date:{$lte:startDate.getTime()}},{End_Date:{$gte:startDate.getTime()}}]},
+                {$and:[{Start_Date:{$lte:endDate.getTime()}},{End_Date:{$gte:endDate.getTime()}}]}]}]}]})
+
+            let checkRoomOverTwoDate = await trans.find({$and:[{$not:{Status:"Checked-out"}},{$and:[{Room_Num:Room[i].Room_Num},
+                {$and:[{Start_Date:{$gt:startDate.getTime()}},{End_Date:{$lt:endDate.getTime()}}]}]}]})
+            
+            if(checkRoomInTwoDate.length==0 && checkRoomOverTwoDate.length==0)
             {
-                arrayValidRoom[i]=arrayRoom[i]
+                arrayValidRoom.push(Room[i])
             }
         }
         if(arrayValidRoom.length>0)
         {
-            return res.json({success:true,message:"List of room available has been sent",listRoom:arrayValidRoom})
+            return res.json(arrayValidRoom)
         }
         else
         {

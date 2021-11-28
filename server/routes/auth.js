@@ -27,7 +27,6 @@ createadmin()*/
 
 router.post('/login',async (req,res)=>{
     const {Account,Password}= req.body
-    
     if(!Account||!Password)
     {
         return res.status(400).json({success:false,message:"Missing user name or password"})

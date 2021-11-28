@@ -7,9 +7,17 @@ const transSchema = new Schema({
         unique: true,
         required:true
     },
-    Customer_Id:{
-        type: String,
-        required: true
+    Customer_Name:{
+        type:String,
+        required:true
+    },
+    Customer_Id_Card:{
+        type:Number,
+        unique:true,
+        require:true
+    },
+    Phone_Number:{
+        type:String,
     },
     Room_Num:{
         type:String,
@@ -32,12 +40,23 @@ const transSchema = new Schema({
         type:String,
         default:null
     },
+    Payment_Method:{
+        type:String,
+        default:"Cash",
+        require:true
+    },
     Status:{
         type:String,
         default:"Uncheck-in"
     },
-    Last_Update_Id:{
+    Status_Payment:{
         type:String,
+        default:"Unpaid",
+        required:true
+    },
+    Total:{
+        type:Number,
+        default:0,
         required:true
     }
 })
