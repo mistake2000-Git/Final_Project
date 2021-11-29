@@ -24,8 +24,8 @@ router.post('/',verifyToken,async (req,res) => {
             return res.status(400).json({success:false,message:"The room number is wrong or room was booked! "})
         }
         //find employee create transaction
-        const id = req._id
-        const findUser = await user.findOne({_id:id})
+        const userId = req._id
+        const findUser = await user.findOne({_id:userId})
         //All good
         //Get new id for transaction
         const newTransId = await autoId('Transaction')
@@ -78,11 +78,10 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Delete transactions
-router.delete('/',verifyToken,async (req,res)=>{
-    const {Trans_Id}= req.body
+router.delete('/:id',verifyToken,async (req,res)=>{
     try
     {
-        await trans.findOneAndDelete({Trans_Id})
+        await trans.findOneAndDelete({Trans_Id:req.params.id})
         res.json({success:true,message:"Delete transaction successfully"})
     }
     catch(err)
@@ -112,33 +111,31 @@ router.get('/',verifyToken, async (req,res)=>{
 
 //customer check in 
 router.patch('/check-in',verifyToken,async (req,res)=>{
-    const {Trans_Id,Customer_Id,Start_Date,End_Date,Room_Num} = req.body
+    const {Trans_Id,Customer_Id_Card,Start_Date,End_Date,Room_Num} = req.body
     try
     {
         const Transaction = await trans.findOne({Trans_Id})
-        if(Transaction.Status==="Uncheck-in"){
+        console.log(Transaction.Start_Date.toLocaleString())
+        const timeCheckin = (Transaction.Start_Date - new Date(Start_Date))/(1000*60*60)
+        if(Transaction.Status==="Uncheck-in" && timeCheckin <= 9 ){
 
             const newPaymentId = await autoId('Payment')
             const User = await user.findOne({_id:req._id})
-            const Payment = new payment({Payment_Id:newPaymentId,Customer_Id,Create_By:User.id})
+            const Payment = new payment({Payment_Id:newPaymentId,Customer_Id_Card,Create_By:User.id})
             await Payment.save()
             const Room = await room.findOne({Room_Num})
             //check if customer check in early 
-            const earlyTime = transaction.Start_Date - (new Date(Start_Date))
-            if(earlyTime>0)
+            let surcharge = 0  
+            if(timeCheckin>5)
             {
-                let surcharge
-                if(earlyTime>5)
-                {
-                    surcharge = Room.Price_per_Day*50/100
-                }
-                else
-                {
-                    surcharge = Room.Price_per_Day*30/100
-                }
-                await payment.findOneAndUpdate({Payment_Id:newPaymentId},{Total:surcharge})
+                surcharge = Room.Price_per_Day*50/100
             }
-            await trans.findOneAndUpdate({Trans_Id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in"})
+            else if(timeCheckin>0)
+            {
+                surcharge = Room.Price_per_Day*30/100
+            }
+            await payment.findOneAndUpdate({Payment_Id:newPaymentId},{Total:surcharge,Payment_Status:"Calculating"})
+            await trans.findOneAndUpdate({Trans_Id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in",Total:surcharge})
             res.json({success:true,message:"Check-in successfully"})
         }
         else 
@@ -160,14 +157,15 @@ router.patch('/payment',verifyToken,async (req,res)=>{
         const Transaction = await trans.findOne({Trans_Id})
         if(Transaction.Status==="Checked-in")
         {
+            console.log('asdf')
             const Room = await room.findOne({Room_Num})
             const Payment = await payment.findOne({Payment_Id})
-            if(Payment.Status!=="Calculated")
+            if(Payment.Payment_Status!=="Calculated")
             {
                 let total = 0
                 let surcharge = 0
-                //customer check-out on time 
-                if(new Date(req.body.End_Date).getTime()===Transaction.End_Date.getTime())
+                //customer check-out on time or early 
+                if(new Date(req.body.End_Date).getTime()===Transaction.End_Date.getTime()||new Date(req.body.End_Date).getTime()<Transaction.End_Date.getTime())
                 { 
                     let priceHours = (new Date(End_Date)-new Date(Start_Date))/(1000*60*60)
                     let priceDays = (new Date(End_Date)-new Date(Start_Date))/(1000*3600*24)
@@ -219,7 +217,8 @@ router.patch('/payment',verifyToken,async (req,res)=>{
                 }
                 console.log(total)
                 total = Payment.Total + total
-                await payment.findOneAndUpdate({Payment_Id},{Total:total,Status:"Calculated"})
+                await payment.findOneAndUpdate({Payment_Id},{Total:total,Payment_Status:"Calculated"})
+                await trans.findOneAndUpdate({Trans_Id},{Total:total,Status_Payment:"Calculated"})
                 res.json({surcharge:surcharge,total:total})
             }
     }
@@ -234,12 +233,21 @@ router.patch('/payment',verifyToken,async (req,res)=>{
 })
 // customer pay bills and check out 
 router.patch('/check-out',verifyToken,async (req,res)=>{
-    const{Payment_Id,Payment_Method} = req.body
+    const{Trans_Id,Payment_Id,Payment_Method} = req.body
     try{
-        const User = user.findOne({_id:req._id})
-        await payment.findOneAndUpdate({Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
-        await trans.findOneAndUpdate({Payment_Id},{Status:"Checked-out",Last_Update_Id:User.id})
-        res.json({success:true,message:"Successful transaction payment"})
+        const transaction = await trans.findOne({Trans_Id})
+        console.log(transaction)
+        if(transaction.Status==="Checked-in" && transaction.Status_Payment === "Calculated")
+        {
+            const User = await user.findOne({_id:req._id})
+            await payment.findOneAndUpdate({Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
+            await trans.findOneAndUpdate({Trans_Id},{Status:"Checked-out",Status_Payment:"Paid"})
+            res.json({success:true,message:"Successful transaction payment"})
+        }
+        else 
+        {
+             throw new Error()
+        }
     }
     catch(err)
     {

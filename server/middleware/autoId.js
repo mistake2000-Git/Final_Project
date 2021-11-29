@@ -15,7 +15,7 @@ async function autoId (typeId)
             {
                 newId="AD_01"
             }
-            if(countAdmin < 10)
+            if(countAdmin < 9)
             {
                 countAdmin++
                 newId = "AD_0" + countAdmin
@@ -35,7 +35,7 @@ async function autoId (typeId)
                 {
                     newId="EMP_01"
                 }
-                else if(countEmp < 10)
+                else if(countEmp < 9)
                 {
                     countEmp++
                     newId = "EMP_0" + countEmp
@@ -54,7 +54,7 @@ async function autoId (typeId)
                 {
                     newId = "CUS_01"
                 }
-                else if(countCus < 10)
+                else if(countCus < 9)
                 {
                     countCus++
                     newId = "CUS_0" + countCus
@@ -73,7 +73,7 @@ async function autoId (typeId)
                 {
                     newId = "TRANS_01"
                 }
-                else if(countTrans < 10)
+                else if(countTrans < 9)
                 {
                     countTrans++
                     newId = "TRANS_0" + countTrans
@@ -92,7 +92,7 @@ async function autoId (typeId)
                 {
                     newId = "PAY_01"
                 }
-                else if(countPay< 10)
+                else if(countPay< 9)
                 {
                     countPay++
                     newId = "PAY_0" + countPay

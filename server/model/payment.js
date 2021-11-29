@@ -7,7 +7,7 @@ const paymentSchema = new Schema({
         unique: true,
         required:true
     },
-    Customer_Id:
+    Customer_Id_Card:
     {
         type: String,
         required: true

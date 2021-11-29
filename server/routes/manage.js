@@ -58,10 +58,10 @@ router.post('/',verifyToken,async (req,res)=>{
     }
 })
 //delete user
-router.delete('/',verifyToken, async(req,res)=>{
-    const {id} = req.body
+router.delete('/:id',verifyToken, async(req,res)=>{
+    const id = req.params.id
     try{
-        await user.findOneAndDelete({id})
+        await user.findOneAndDelete({id:id})
         res.json({success:true,message:"User has been deleted"})
     }
     catch(err)

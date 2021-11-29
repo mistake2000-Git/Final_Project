@@ -5,9 +5,6 @@ const user = require('../model/user')
 const jwt = require('jsonwebtoken')
 require('dotenv').config() 
 
-router.get('/',(req,res)=>{
-    res.send('hellowr')
-})
 /*Initial admin
 const createadmin = async ()=>{
         const adpassword = "password"

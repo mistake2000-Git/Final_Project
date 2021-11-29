@@ -41,11 +41,10 @@ router.post('/',verifyToken, async (req,res)=>{
 
 
 //Delete room
-router.delete('/',async (req,res)=>{
-    const {Room_Num} = req.body
+router.delete('/:id',async (req,res)=>{
     try
     {
-        const checkDelete = await room.findOneAndDelete({Room_Num})
+        const checkDelete = await room.findOneAndDelete({Room_Num:req.params.id})
         if(!checkDelete)
             throw new Error()
         res.json({success:true,message:"Delete Successfully"})
@@ -70,12 +69,15 @@ router.patch('/',verifyToken, async(req,res)=>{
         const roomValues = Object.values(req.body)
         for(let i=1;i<roomProperty.length;i++)
         {
-            let property = roomProperty[i]
-            let values = roomValues[i]
-            let filter = {Room_Num}
-            let update = {property:values}
-            update[property] = update['property']
-            await room.updateOne(filter,update)
+            if(roomValues[i]!="")
+            {
+                let property = roomProperty[i]
+                let values = roomValues[i]
+                let filter = {Room_Num}
+                let update = {property:values}
+                update[property] = update['property']
+                await room.updateOne(filter,update)
+            }
         }
         res.json({success:true,message:"Update room infomation successfully"})
     }
