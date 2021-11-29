@@ -9,7 +9,7 @@ const { create } = require('../model/room')
 
 
 //Get all room
-router.get('/',async (req,res)=>{
+router.get('/',verifyToken,async (req,res)=>{
     try
     {
         const Room = await room.find()
@@ -41,7 +41,7 @@ router.post('/',verifyToken, async (req,res)=>{
 
 
 //Delete room
-router.delete('/:id',async (req,res)=>{
+router.delete('/:id',verifyToken,async (req,res)=>{
     try
     {
         const checkDelete = await room.findOneAndDelete({id:req.params.id})
@@ -88,22 +88,23 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Check room are available between two date
-router.patch('/checkRoom',async(req,res)=>{
+router.patch('/checkRoom',verifyToken,async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
     {   
         const Room = await room.find({},{_id:0})
-        let startDate = new Date(startDate).setHour(14,0,0)
-        let endDate = new Date(endDate).setHours(12,0,0)
+        let startDate = new Date(Start_Date).setHours(14,0,0)
+        console.log(startDate)
+        let endDate = new Date(End_Date).setHours(12,0,0)
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {
-            let checkRoomInTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{id:Room[i].id},
-                {$or:[{$and:[{Start_Date:{$lte:startDate.getTime()}},{End_Date:{$gte:startDate.getTime()}}]},
-                {$and:[{Start_Date:{$lte:endDate.getTime()}},{End_Date:{$gte:endDate.getTime()}}]}]}]}]})
+            let checkRoomInTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{Room_Num:Room[i].id},
+                {$or:[{$and:[{Start_Date:{$lte:startDate}},{End_Date:{$gte:startDate}}]},
+                {$and:[{Start_Date:{$lte:endDate}},{End_Date:{$gte:endDate}}]}]}]}]})
 
-            let checkRoomOverTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{id:Room[i].id},
-                {$and:[{Start_Date:{$gt:startDate.getTime()}},{End_Date:{$lt:endDate.getTime()}}]}]}]})
+            let checkRoomOverTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{Room_Num:Room[i].id},
+                {$and:[{Start_Date:{$gt:startDate}},{End_Date:{$lt:endDate}}]}]}]})
             
             if(checkRoomInTwoDate.length==0 && checkRoomOverTwoDate.length==0)
             {
