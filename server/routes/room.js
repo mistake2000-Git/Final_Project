@@ -93,10 +93,8 @@ router.patch('/checkRoom',async(req,res)=>{
     try
     {
         const Room = await room.find({},{_id:0})
-        let startDate = Start_Date+" 02:00:00 PM"
-        startDate = new Date(startDate)
-        let endDate = End_Date+" 12:00:00 AM"
-        endDate = new Date(endDate)
+        let startDate = new Date(startDate).setHour(14,00,00)
+        let endDate = new Date(endDate).setHours(12,00,00)
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {
