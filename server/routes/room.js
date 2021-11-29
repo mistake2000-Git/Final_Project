@@ -23,12 +23,12 @@ router.get('/',async (req,res)=>{
 })
 //Add new room
 router.post('/',verifyToken, async (req,res)=>{
-    const {Room_Num,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status}= req.body
+    const {id,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status}= req.body
     try 
     {
         const findUser = await user.findOne({_id:req._id})
         idUserCreate = findUser.id
-        const newRoom = new room({Room_Num,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status,Create_By:idUserCreate})
+        const newRoom = new room({id,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status,Create_By:idUserCreate})
         await newRoom.save()
         res.json({success:true,message:"Create Room successfully"})
     }
@@ -44,7 +44,7 @@ router.post('/',verifyToken, async (req,res)=>{
 router.delete('/:id',async (req,res)=>{
     try
     {
-        const checkDelete = await room.findOneAndDelete({Room_Num:req.params.id})
+        const checkDelete = await room.findOneAndDelete({id:req.params.id})
         if(!checkDelete)
             throw new Error()
         res.json({success:true,message:"Delete Successfully"})
@@ -57,10 +57,10 @@ router.delete('/:id',async (req,res)=>{
 
 //Update room
 router.patch('/',verifyToken, async(req,res)=>{
-    const {Room_Num} = req.body
+    const {id} = req.body
     try 
     {
-        const Room = await room.findOne({Room_Num})
+        const Room = await room.findOne({id})
         if(!Room)
         {
             return res.status(400).json({success:false,message:"Can not find the room to update"})
@@ -73,7 +73,7 @@ router.patch('/',verifyToken, async(req,res)=>{
             {
                 let property = roomProperty[i]
                 let values = roomValues[i]
-                let filter = {Room_Num}
+                let filter = {id}
                 let update = {property:values}
                 update[property] = update['property']
                 await room.updateOne(filter,update)
@@ -100,11 +100,11 @@ router.patch('/checkRoom',async(req,res)=>{
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {
-            let checkRoomInTwoDate = await trans.find({$and:[{$not:{Status:"Checked-out"}},{$and:[{Room_Num:Room[i].Room_Num},
+            let checkRoomInTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{id:Room[i].id},
                 {$or:[{$and:[{Start_Date:{$lte:startDate.getTime()}},{End_Date:{$gte:startDate.getTime()}}]},
                 {$and:[{Start_Date:{$lte:endDate.getTime()}},{End_Date:{$gte:endDate.getTime()}}]}]}]}]})
 
-            let checkRoomOverTwoDate = await trans.find({$and:[{$not:{Status:"Checked-out"}},{$and:[{Room_Num:Room[i].Room_Num},
+            let checkRoomOverTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{id:Room[i].id},
                 {$and:[{Start_Date:{$gt:startDate.getTime()}},{End_Date:{$lt:endDate.getTime()}}]}]}]})
             
             if(checkRoomInTwoDate.length==0 && checkRoomOverTwoDate.length==0)

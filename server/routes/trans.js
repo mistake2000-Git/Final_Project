@@ -41,9 +41,9 @@ router.post('/',verifyToken,async (req,res) => {
             const newCustomer = new customer({Customer_Id:newCusId,Customer_Name,Phone_Number})
         }*/
         const newTrans = new trans ({
-        Trans_Id:newTransId,Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:findUser.id})
+        id:newTransId,Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:findUser.id})
         await newTrans.save()
-        await room.findOneAndUpdate({Room_Num},{Status:"Booked"})
+        await room.findOneAndUpdate({id:req.body.Room_Num},{Status:"Booked"})
         res.json({success:true,message:"Create transaction successfully!"})
     }
     catch(err)
@@ -55,14 +55,17 @@ router.post('/',verifyToken,async (req,res) => {
 
 //update transaction
 router.patch('/',verifyToken, async(req,res)=>{
-    const {Trans_Id,Room_Num,Start_Date,End_Date} = req.body
+    const {id,Room_Num,Start_Date,End_Date} = req.body
     try 
     {
-        const findTrans = await checkDate(req.body.Start_Date,req.body.End_Date,req.body.Room_Num,req.body.Trans_Id)
+        const newStartDate = Start_Date + " 2:00:00 PM"
+        const newEndDate = End_Date + " 12:00:00 AM"
+        console.log(newStartDate)
+        const findTrans = await checkDate(newStartDate,newEndDate,req.body.Room_Num,req.body.id)
         if(findTrans)
         {
             const lastUserUpdate = await user.findOne({_id:req._id})
-            await trans.findOneAndUpdate({Trans_Id},{Room_Num,Start_Date,End_Date,Last_Update_Id:lastUserUpdate.id})
+            await trans.findOneAndUpdate({id},{Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:lastUserUpdate.id})
             res.json({success:true,message:"Update successfully"})
         }
         else
@@ -81,7 +84,7 @@ router.patch('/',verifyToken, async(req,res)=>{
 router.delete('/:id',verifyToken,async (req,res)=>{
     try
     {
-        await trans.findOneAndDelete({Trans_Id:req.params.id})
+        await trans.findOneAndDelete({id:req.params.id})
         res.json({success:true,message:"Delete transaction successfully"})
     }
     catch(err)
@@ -95,6 +98,7 @@ router.get('/',verifyToken, async (req,res)=>{
     try
     {
         const transList = await trans.find()
+        console.log(transList[4].Start_Date.toLocaleString())
         if(transList)
         {
             return res.json(transList)
@@ -111,19 +115,19 @@ router.get('/',verifyToken, async (req,res)=>{
 
 //customer check in 
 router.patch('/check-in',verifyToken,async (req,res)=>{
-    const {Trans_Id,Customer_Id_Card,Start_Date,End_Date,Room_Num} = req.body
+    const {id,Customer_Id_Card,Start_Date,End_Date,Room_Num} = req.body
     try
     {
-        const Transaction = await trans.findOne({Trans_Id})
+        const Transaction = await trans.findOne({id})
         console.log(Transaction.Start_Date.toLocaleString())
         const timeCheckin = (Transaction.Start_Date - new Date(Start_Date))/(1000*60*60)
+        console.log(timeCheckin)
         if(Transaction.Status==="Uncheck-in" && timeCheckin <= 9 ){
 
             const newPaymentId = await autoId('Payment')
             const User = await user.findOne({_id:req._id})
-            const Payment = new payment({Payment_Id:newPaymentId,Customer_Id_Card,Create_By:User.id})
-            await Payment.save()
-            const Room = await room.findOne({Room_Num})
+            const Room = await room.findOne({id:req.body.Room_Num})
+            console.log(Room)
             //check if customer check in early 
             let surcharge = 0  
             if(timeCheckin>5)
@@ -134,8 +138,10 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
             {
                 surcharge = Room.Price_per_Day*30/100
             }
-            await payment.findOneAndUpdate({Payment_Id:newPaymentId},{Total:surcharge,Payment_Status:"Calculating"})
-            await trans.findOneAndUpdate({Trans_Id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in",Total:surcharge})
+            const Payment = new payment({id:newPaymentId,Customer_Id_Card,Create_By:User.id})
+            await Payment.save()
+            await payment.findOneAndUpdate({id:newPaymentId},{Total:surcharge,Payment_Status:"Calculating"})
+            await trans.findOneAndUpdate({id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in",Total:surcharge})
             res.json({success:true,message:"Check-in successfully"})
         }
         else 
@@ -151,15 +157,15 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
 
 //Show payment of customer
 router.patch('/payment',verifyToken,async (req,res)=>{
-    const {Trans_Id,Room_Num,Payment_Id,Start_Date,End_Date,CostIncurr} = req.body
+    const {id,Room_Num,Payment_Id,Start_Date,End_Date,CostIncurr} = req.body
     try
     {
-        const Transaction = await trans.findOne({Trans_Id})
+        const Transaction = await trans.findOne({id})
         if(Transaction.Status==="Checked-in")
         {
             console.log('asdf')
-            const Room = await room.findOne({Room_Num})
-            const Payment = await payment.findOne({Payment_Id})
+            const Room = await room.findOne({id:req.body.Room_Num})
+            const Payment = await payment.findOne({id:req.body.Payment_Id})
             if(Payment.Payment_Status!=="Calculated")
             {
                 let total = 0
@@ -217,10 +223,11 @@ router.patch('/payment',verifyToken,async (req,res)=>{
                 }
                 console.log(total)
                 total = Payment.Total + total
-                await payment.findOneAndUpdate({Payment_Id},{Total:total,Payment_Status:"Calculated"})
-                await trans.findOneAndUpdate({Trans_Id},{Total:total,Status_Payment:"Calculated"})
+                await payment.findOneAndUpdate({id:req.body.Payment_Id},{Total:total,Payment_Status:"Calculated"})
+                await trans.findOneAndUpdate({id},{Total:total,Status_Payment:"Calculated"})
                 res.json({surcharge:surcharge,total:total})
             }
+            else throw new Error()
     }
     else 
         throw new Error()
@@ -233,15 +240,20 @@ router.patch('/payment',verifyToken,async (req,res)=>{
 })
 // customer pay bills and check out 
 router.patch('/check-out',verifyToken,async (req,res)=>{
-    const{Trans_Id,Payment_Id,Payment_Method} = req.body
+    const{id,Payment_Id,Payment_Method,Room_Num} = req.body
     try{
-        const transaction = await trans.findOne({Trans_Id})
+        const transaction = await trans.findOne({id})
         console.log(transaction)
         if(transaction.Status==="Checked-in" && transaction.Status_Payment === "Calculated")
         {
             const User = await user.findOne({_id:req._id})
-            await payment.findOneAndUpdate({Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
-            await trans.findOneAndUpdate({Trans_Id},{Status:"Checked-out",Status_Payment:"Paid"})
+            await payment.findOneAndUpdate({id:req.body.Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
+            await trans.findOneAndUpdate({id},{Status:"Checked-out",Status_Payment:"Paid"})
+            const updateRoom = await trans.find({$and:[{Room_Num},{Status:{$ne:"Checked-out"}}]})
+            if(updateRoom.lengt==0)
+            {
+                await room.findOneAndUpdate({id:req.body.Room_Num},{Status:"Unbooked"})
+            }
             res.json({success:true,message:"Successful transaction payment"})
         }
         else 

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 require('mongoose-moment')(mongoose);
 const transSchema = new Schema({
-    Trans_Id:{
+    id:{
         type: String,
         unique: true,
         required:true

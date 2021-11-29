@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const paymentSchema = new Schema({
-    Payment_Id:{
+    id:{
         type: String,
         unique: true,
         required:true
