@@ -91,10 +91,10 @@ router.patch('/',verifyToken, async(req,res)=>{
 router.patch('/checkRoom',async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
-    {
+    {   
         const Room = await room.find({},{_id:0})
-        let startDate = new Date(startDate).setHour(14,00,00)
-        let endDate = new Date(endDate).setHours(12,00,00)
+        let startDate = new Date(startDate).setHour(14,0,0)
+        let endDate = new Date(endDate).setHours(12,0,0)
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {

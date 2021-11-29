@@ -31,8 +31,8 @@ router.post('/',verifyToken,async (req,res) => {
         const newTransId = await autoId('Transaction')
       
         //create transaction
-        const newStartDate = Start_Date+" 2:00:00 PM"
-        const newEndDate = End_Date+" 12:00:00 AM"
+        const newStartDate = new Date(Start_Date).setHours(14,0,0)
+        const newEndDate = new Date(End_Date).setHours(12,0,0)
         
         /*const Customer = await customer.findOne({Customer_Id_Card})
         if(!Customer)
@@ -58,8 +58,8 @@ router.patch('/',verifyToken, async(req,res)=>{
     const {id,Room_Num,Start_Date,End_Date} = req.body
     try 
     {
-        const newStartDate = Start_Date + " 2:00:00 PM"
-        const newEndDate = End_Date + " 12:00:00 AM"
+        const newStartDate = new Date(Start_Date).setHours(14,0,0)
+        const newEndDate = new Date(End_Date).setHours(12,0,0)
         console.log(newStartDate)
         const findTrans = await checkDate(newStartDate,newEndDate,req.body.Room_Num,req.body.id)
         if(findTrans)
@@ -98,7 +98,6 @@ router.get('/',verifyToken, async (req,res)=>{
     try
     {
         const transList = await trans.find()
-        console.log(transList[4].Start_Date.toLocaleString())
         if(transList)
         {
             return res.json(transList)
