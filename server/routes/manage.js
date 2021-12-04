@@ -5,8 +5,8 @@ const argon2 = require('argon2')
 const verifyToken = require('../middleware/authadmin');
 const autoId = require('../middleware/autoId');
 //Get one user
-router.get('/getone',verifyToken,async(req,res)=>{
-    const {id} = req.body
+router.get('/getone/:id',verifyToken,async(req,res)=>{
+    const id = req.params.id
     try{
         const User = await user.findOne({id})
         if(User)
@@ -46,7 +46,6 @@ router.post('/',verifyToken,async (req,res)=>{
 
         const passwordHash = await argon2.hash(req.body.Password)
         let newId =  await autoId(Type)
-        console.log(newId)
         const User = new user({id:newId,Type,Name,Gender,Date_of_Birth,Address,Phone,Email,Account,Password:passwordHash})
         await User.save()
         res.json({success:true,message:"Create user successfully",User: User})
@@ -83,7 +82,6 @@ router.patch('/',verifyToken, async(req,res)=>{
         }
         const userProperty = Object.keys(req.body)
         const userValues = Object.values(req.body)
-        console.log(userValues[1])
         for(let i=1;i<userProperty.length;i++)
         {
             if(userValues[i]!="")

@@ -33,6 +33,12 @@ const paymentSchema = new Schema({
         default:Date.now(),
         required: true
     },
+    Surcharge:
+    {
+        type:Number,
+        default:0,
+        require:true
+    },
     Create_By:{
         type:String,
         required:true

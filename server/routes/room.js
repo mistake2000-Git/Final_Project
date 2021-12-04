@@ -92,18 +92,26 @@ router.patch('/checkRoom',verifyToken,async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
     {   
+        let startDate,endDate
+        if(new Date(Start_Date).getTime()==new Date(End_Date).getTime())
+        {
+            startDate = new Date(Start_Date).setHours(0,0,0)   
+            endDate = new Date(End_Date).setHours(23,59,0)
+        }
+        else
+        {
+            startDate = new Date(Start_Date).setHours(14,0,0)
+            endDate = new Date(End_Date).setHours(12,0,0)
+        }
         const Room = await room.find({},{_id:0})
-        let startDate = new Date(Start_Date).setHours(14,0,0)
-        console.log(startDate)
-        let endDate = new Date(End_Date).setHours(12,0,0)
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {
-            let checkRoomInTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{Room_Num:Room[i].id},
+            let checkRoomInTwoDate = await trans.find({$and:[{$and:[{Status:{$ne:"Checked-out"}},{Status:{$ne:"Cancelled"}}]},{$and:[{Room_Num:Room[i].id},
                 {$or:[{$and:[{Start_Date:{$lte:startDate}},{End_Date:{$gte:startDate}}]},
                 {$and:[{Start_Date:{$lte:endDate}},{End_Date:{$gte:endDate}}]}]}]}]})
 
-            let checkRoomOverTwoDate = await trans.find({$and:[{Status:{$ne:"Checked-out"}},{$and:[{Room_Num:Room[i].id},
+            let checkRoomOverTwoDate = await trans.find({$and:[{$and:[{Status:{$ne:"Checked-out"}},{Status:{$ne:"Cancelled"}}]},{$and:[{Room_Num:Room[i].id},
                 {$and:[{Start_Date:{$gt:startDate}},{End_Date:{$lt:endDate}}]}]}]})
             
             if(checkRoomInTwoDate.length==0 && checkRoomOverTwoDate.length==0)

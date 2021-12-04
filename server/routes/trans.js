@@ -8,7 +8,6 @@ const customer = require('../model/customer')
 const verifyToken = require('../middleware/auth')
 const autoId = require('../middleware/autoId')
 const checkDate = require('../function/checkDate')
-const transaction = require('../model/transaction')
 
 
 //create transaction
@@ -16,13 +15,6 @@ router.post('/',verifyToken,async (req,res) => {
     const {Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date,End_Date}=req.body
     try
     {
-        //check room available
-        const checkRoom = await checkDate(req.body.Start_Date,req.body.End_Date,req.body.Room_Num)
-        //checkRoomDate = await transaction.findOne(Room_Num)
-        if (!checkRoom||checkRoom==false)
-        {   
-            return res.status(400).json({success:false,message:"The room number is wrong or room was booked! "})
-        }
         //find employee create transaction
         const userId = req._id
         const findUser = await user.findOne({_id:userId})
@@ -53,14 +45,13 @@ router.post('/',verifyToken,async (req,res) => {
     }
 })
 
-//update transaction
+/*update transaction
 router.patch('/',verifyToken, async(req,res)=>{
     const {id,Room_Num,Start_Date,End_Date} = req.body
     try 
     {
         const newStartDate = new Date(Start_Date).setHours(14,0,0)
         const newEndDate = new Date(End_Date).setHours(12,0,0)
-        console.log(newStartDate)
         const findTrans = await checkDate(newStartDate,newEndDate,req.body.Room_Num,req.body.id)
         if(findTrans)
         {
@@ -79,7 +70,7 @@ router.patch('/',verifyToken, async(req,res)=>{
         res.json({message:false,message:"Internal Error"})
     }
 })
-
+*/
 // Delete transactions
 router.delete('/:id',verifyToken,async (req,res)=>{
     try
@@ -100,6 +91,14 @@ router.get('/',verifyToken, async (req,res)=>{
         const transList = await trans.find()
         if(transList)
         {
+            for(let i=0;i<transList.length;i++)
+            {
+                transList[i] = JSON.stringify(transList[i])
+                transList[i]= JSON.parse(transList[i])
+                transList[i].Start_Date_Formatted = new Date(transList[i].Start_Date).toLocaleString()
+                transList[i].End_Date_Formatted = new Date (transList[i].End_Date).toLocaleString()
+                transList[i].Create_Date_Formatted = new Date(transList[i].Create_Date).toLocaleString()
+            }
             return res.json(transList)
         }
         else throw new Error()
@@ -115,10 +114,13 @@ router.get('/getone/:id',async(req,res)=>{
     const id = req.params.id
     try
     {
-        const transaction = await trans.findOne({id})
-        if(transaction)
-            return res.json(transaction)
-        else throw new Error()
+        let transaction = await trans.findOne({id},{_id:0})
+        transaction = JSON.stringify(transaction)
+        transaction = JSON.parse(transaction)
+        transaction.Start_Date_Formatted = new Date(transaction.Start_Date).toLocaleString()
+        transaction.End_Date_Formatted = new Date (transaction.End_Date).toLocaleString()
+        transaction.Create_Date_Formatted = new Date(transaction.Create_Date).toLocaleString()
+        res.json(transaction)
     }
     catch(err)
     {
@@ -133,15 +135,12 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
     try
     {
         const Transaction = await trans.findOne({id})
-        console.log(Transaction.Start_Date.toLocaleString())
         const timeCheckin = (Transaction.Start_Date - new Date(Start_Date))/(1000*60*60)
-        console.log(timeCheckin)
         if(Transaction.Status==="Uncheck-in" && timeCheckin <= 9 ){
 
             const newPaymentId = await autoId('Payment')
             const User = await user.findOne({_id:req._id})
             const Room = await room.findOne({id:req.body.Room_Num})
-            console.log(Room)
             //check if customer check in early 
             let surcharge = 0  
             if(timeCheckin>5)
@@ -154,8 +153,8 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
             }
             const Payment = new payment({id:newPaymentId,Customer_Id_Card,Create_By:User.id})
             await Payment.save()
-            await payment.findOneAndUpdate({id:newPaymentId},{Total:surcharge,Payment_Status:"Calculating"})
-            await trans.findOneAndUpdate({id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in",Total:surcharge})
+            await payment.findOneAndUpdate({id:newPaymentId},{Surcharge:surcharge,Payment_Status:"Calculating"})
+            await trans.findOneAndUpdate({id},{Payment_Id:newPaymentId,Start_Date,End_Date,Status:"Checked-in"})
             res.json({success:true,message:"Check-in successfully"})
         }
         else 
@@ -169,17 +168,16 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
 })
 
 
-//Show payment of customer
-router.patch('/payment',verifyToken,async (req,res)=>{
-    const {id,Room_Num,Payment_Id,Start_Date,End_Date,CostIncurr} = req.body
+//Show check-out payment of customer
+router.patch('/check-out',verifyToken,async (req,res)=>{
+    const {id,Room_Num,Payment_Id,Start_Date,End_Date} = req.body
     try
     {
         const Transaction = await trans.findOne({id})
         if(Transaction.Status==="Checked-in")
         {
-            console.log('asdf')
-            const Room = await room.findOne({id:req.body.Room_Num})
-            const Payment = await payment.findOne({id:req.body.Payment_Id})
+            const Room = await room.findOne({id:Room_Num})
+            const Payment = await payment.findOne({id:Payment_Id})
             if(Payment.Payment_Status!=="Calculated")
             {
                 let total = 0
@@ -233,11 +231,10 @@ router.patch('/payment',verifyToken,async (req,res)=>{
                     {
                         surcharge  = Transaction.Price_per_Day*30/100
                     }
-                    total = total + surcharge+ CostIncurr
+                    total = total + surcharge
                 }
-                console.log(total)
-                total = Payment.Total + total
-                await payment.findOneAndUpdate({id:req.body.Payment_Id},{Total:total,Payment_Status:"Calculated"})
+                surcharge = Payment.Surcharge + surcharge
+                await payment.findOneAndUpdate({id:req.body.Payment_Id},{Surcharge:surcharge,Total:total,Payment_Status:"Calculated"})
                 await trans.findOneAndUpdate({id},{Total:total,Status_Payment:"Calculated"})
                 res.json({surcharge:surcharge,total:total})
             }
@@ -253,18 +250,17 @@ router.patch('/payment',verifyToken,async (req,res)=>{
     }
 })
 // customer pay bills and check out 
-router.patch('/check-out',verifyToken,async (req,res)=>{
+router.patch('/pay',verifyToken,async (req,res)=>{
     const{id,Payment_Id,Payment_Method,Room_Num} = req.body
     try{
         const transaction = await trans.findOne({id})
-        console.log(transaction)
         if(transaction.Status==="Checked-in" && transaction.Status_Payment === "Calculated")
         {
             const User = await user.findOne({_id:req._id})
             await payment.findOneAndUpdate({id:req.body.Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
             await trans.findOneAndUpdate({id},{Status:"Checked-out",Status_Payment:"Paid"})
             const updateRoom = await trans.find({$and:[{Room_Num},{Status:{$ne:"Checked-out"}}]})
-            if(updateRoom.lengt==0)
+            if(updateRoom.length==0)
             {
                 await room.findOneAndUpdate({id:req.body.Room_Num},{Status:"Unbooked"})
             }
@@ -279,6 +275,29 @@ router.patch('/check-out',verifyToken,async (req,res)=>{
     {
         console.log(err.message)
         res.status(400).json({success:false,message:"Internal Error"})
+    }
+})
+
+//cancel transaction 
+router.patch('/cancel/:id',async(req,res)=>{
+    const id = req.params.id
+    try
+    {
+        const transaction = await trans.findOne({id})
+        if(transaction.Status==="Uncheck-in")
+        {
+            await trans.findOneAndUpdate({id},{Status:"Cancelled"})
+            res.json({success:true,message:"Transaction has been cancelled"})
+        }
+        else
+        { 
+            throw new Error()
+        }
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.json({success:false,message:"Internal Error"})
     }
 })
 module.exports = router

@@ -36,3 +36,5 @@ app.use('/api/room',roomRouter)
 
 const transRouter = require(__dirname+'/routes/trans')
 app.use('/api/trans',transRouter)
+const paymentRouter = require(__dirname+'/routes/payment')
+app.use('/api/payment',paymentRouter)
