@@ -110,7 +110,22 @@ router.get('/',verifyToken, async (req,res)=>{
         res.status(400).json({success:false,message:"Internal Error!"})
     }
 })
-
+//Get one transation 
+router.get('/getone/:id',async(req,res)=>{
+    const id = req.params.id
+    try
+    {
+        const transaction = await trans.findOne({id})
+        if(transaction)
+            return res.json(transaction)
+        else throw new Error()
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Internal Error!"})
+    }
+})
 
 //customer check in 
 router.patch('/check-in',verifyToken,async (req,res)=>{
