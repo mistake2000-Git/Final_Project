@@ -17,7 +17,7 @@ const connectDB = async () => {
           useUnifiedTopology: true
         }
       )
-      app.listen(5000,()=>console.log("Server is started at 5000 PORT"))
+      app.listen(PORT,()=>console.log("Server is started at 5000 PORT"))
       console.log('Connected to mongoDB')
     } catch (error) {
       console.log(error)
