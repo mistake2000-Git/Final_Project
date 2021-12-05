@@ -13,7 +13,6 @@ const transSchema = new Schema({
     },
     Customer_Id_Card:{
         type:Number,
-        unique:true,
         require:true
     },
     Phone_Number:{
