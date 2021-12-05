@@ -7,7 +7,24 @@ const verifyToken = require('../middleware/authadmin')
 const autoId = require('../middleware/autoId')
 const { create } = require('../model/room')
 
-
+//Get one room
+router.get('/getone/:id',verifyToken,async(req,res)=>{
+    const id = req.params.id
+    try
+    {
+        const Room = await room.findOne({id})
+        if(Room)
+        {
+            res.json(Room)
+        }
+        else throw new Error()
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Internal Error!"})
+    }
+})
 //Get all room
 router.get('/',verifyToken,async (req,res)=>{
     try
