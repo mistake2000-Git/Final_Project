@@ -4,6 +4,7 @@ const room = require('../model/room')
 const user = require('../model/user')
 const trans = require('../model/transaction')
 const verifyToken = require('../middleware/authadmin')
+const verifyTokenEmp = require('../middleware/auth')
 const autoId = require('../middleware/autoId')
 const { create } = require('../model/room')
 
@@ -26,7 +27,7 @@ router.get('/getone/:id',verifyToken,async(req,res)=>{
     }
 })
 //Get all room
-router.get('/',verifyToken,async (req,res)=>{
+router.get('/',verifyTokenEmp,async (req,res)=>{
     try
     {
         const Room = await room.find()
@@ -105,7 +106,7 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Check room are available between two date
-router.patch('/checkRoom',verifyToken,async(req,res)=>{
+router.patch('/checkRoom',verifyTokenEmp,async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
     {   
