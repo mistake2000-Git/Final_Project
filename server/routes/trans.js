@@ -185,8 +185,8 @@ router.patch('/check-out',verifyToken,async (req,res)=>{
                 //customer check-out on time or early 
                 if(new Date(req.body.End_Date).getTime()===Transaction.End_Date.getTime()||new Date(req.body.End_Date).getTime()<Transaction.End_Date.getTime())
                 { 
-                    let priceHours = (new Date(End_Date)-new Date(Start_Date))/(1000*60*60)
-                    let priceDays = (new Date(End_Date)-new Date(Start_Date))/(1000*3600*24)
+                    let priceHours = (Transaction.End_Date-Transaction.Start_Date)/(1000*60*60)
+                    let priceDays = (Transaction.End_Date-Transaction.Start_Date)/(1000*3600*24)
                     if(priceDays>=0.8)
                     {
                         total = Math.round(priceDays)*Room.Price_per_Day
@@ -257,9 +257,9 @@ router.patch('/pay',verifyToken,async (req,res)=>{
         if(transaction.Status==="Checked-in" && transaction.Status_Payment === "Calculated")
         {
             const User = await user.findOne({_id:req._id})
-            await payment.findOneAndUpdate({id:req.body.Payment_Id},{Payment_Method,Payment_Status:"Paid",Create_By:User.id})
-            await trans.findOneAndUpdate({id},{Status:"Checked-out",Status_Payment:"Paid"})
-            const updateRoom = await trans.find({$and:[{Room_Num},{Status:{$ne:"Checked-out"}}]})
+            await payment.findOneAndUpdate({id:req.body.Payment_Id},{Payment_method:Payment_Method,Payment_Status:"Paid",Create_By:User.id})
+            await trans.findOneAndUpdate({id},{Payment_Method,Status:"Checked-out",Status_Payment:"Paid"})
+            const updateRoom = await trans.find({$and:[{Room_Num},{$and:[{Status:{$ne:"Checked-out"}},{Status:{$ne:"Cancelled"}}]}]})
             if(updateRoom.length==0)
             {
                 await room.findOneAndUpdate({id:req.body.Room_Num},{Status:"Unbooked"})
@@ -277,6 +277,7 @@ router.patch('/pay',verifyToken,async (req,res)=>{
         res.status(400).json({success:false,message:"Internal Error"})
     }
 })
+
 
 //cancel transaction 
 router.patch('/cancel/:id',async(req,res)=>{
