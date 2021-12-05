@@ -4,6 +4,22 @@ const user = require('../model/user')
 const argon2 = require('argon2')
 const verifyToken = require('../middleware/authadmin');
 const autoId = require('../middleware/autoId');
+
+//Get profile
+router.get('/getprofile',verifyToken,async(req,res)=>{
+    try{
+        const User = await user.findOne({_id:req._id})
+        if(User)
+        {
+            res.json(User)
+        }
+    }
+    catch(err)
+    {
+        console.log(err.message)
+        res.status(400).json({success:false,message:"Internal Error!"})
+    }
+})
 //Get one user
 router.get('/getone/:id',verifyToken,async(req,res)=>{
     const id = req.params.id
