@@ -46,7 +46,8 @@ router.post('/login',async (req,res)=>{
                 success:true,
                 message:'User login successfully',
                 accessToken,
-                UserType:User.Type
+                UserType:User.Type,
+                UserName:User.Name
             }
         )
     }
