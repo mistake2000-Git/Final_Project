@@ -103,6 +103,7 @@ module.exports= router
  *
  * @apiSuccess {String} ID Id of the user.
  * @apiSuccess {String} Type Type of the user.
+ * @apiSuccess {String} Img Image profile of the user.
  * @apiSuccess {String} Name The user name.
  * @apiSuccess {String} Phone The user phone number.
  * @apiSuccess {String} Gender Gender of the user.
@@ -115,6 +116,7 @@ module.exports= router
           {
                 "id": "AD_01",
                 "Type": "Admin",
+                "Img" : "asdhlqkwjhelkajsbflkj",
                 "Name": "min",
                 "Phone": "0969066865",
                 "Gender": "Male",
@@ -137,37 +139,44 @@ module.exports= router
 
 
 /**
- * @api {get} /cubes/ Add a new Product
- * @apiDescription This api will add a new product to the Products List!
- * @apiName AddNewProduct
- * @apiGroup RubikShop
+ * @api {get} /api/manage/getprofile Get profile of the user logged in
+ * @apiDescription This api will return profile of the user who logged in!
+ * @apiName GetProfile
+ * @apiGroup Manage
  *
- * @apiSuccess {String} ID id of the product.
- * @apiSuccess {String} Category name  of product.
- * @apiSuccess {String} Name name  of product.
- * @apiSuccess {Int} Quantity quantity  of product.
- * @apiSuccess {Int} Price price  of product
- *
+ * @apiSuccess {String} ID Id of the user.
+ * @apiSuccess {String} Type Type of the user.
+ * @apiSuccess {String} Img Image profile  of the user.
+ * @apiSuccess {String} Name The user name.
+ * @apiSuccess {String} Phone The user phone number.
+ * @apiSuccess {String} Gender Gender of the user.
+ * @apiSuccess {String} Email Email of the user.
+ * @apiSuccess {String} Date_of_Birth The date of birth of the user.
+ * @apiSuccess {String} Address The address of the user.
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *    [
-            {
-                "_id": "6187fe2fa2241ed2e1359b26",
-                "category": "3x3",
-                "name": "Rubik Moyu Weilong WR M 2020",
-                "quantity": 40,
-                "price": 650000,
-                "__v": 0
+          {
+                "id": "AD_01",
+                "Type": "Admin",
+                "Img":"asdkfhpoqwkheqeugali",
+                "Name": "min",
+                "Phone": "0969066865",
+                "Gender": "Male",
+                "Email": "admin.email@gmail.com",
+                "Date_of_Birth": "2000-01-03",
+                "Address": "HCM City",
             }
-        ]
- * @apiError (404) TheProductExist The new product is exist!
- * @apiErrorExample Error-Response:
- *     The product name is exist!
- * @apiBody {string} [category] The category of the new product
- * @apiBody {string} [name] The name of the new product
- * @apiBody {int} [quantity] The quantity of the new product
- * @apiBody {int} [price] The name of the new product
- * @apiSampleRequest https://assignment4tanloc.herokuapp.com/cubes/
+      ]
+ * @apiError (404) UserNotFound Can not found the user or internal error!
+ * @apiErrorExample {object} Error-Response:
+ *      HTTP/1.1 400 Bad Request 
+ *        {
+            "success": false,
+            "message": "Can not find user or internal error!"
+          }
+ * @apiHeader {String} Authorization=Bearer Users unique access-key.
+ * @apiSampleRequest  https://backend-apidoc.herokuapp.com/api/manage/getprofile/
  */
 
 

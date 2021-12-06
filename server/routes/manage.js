@@ -4,9 +4,9 @@ const user = require('../model/user')
 const argon2 = require('argon2')
 const verifyToken = require('../middleware/authadmin');
 const autoId = require('../middleware/autoId');
-
+const verifyTokenEmp = require('../middleware/auth')
 //Get profile
-router.get('/getprofile',verifyToken,async(req,res)=>{
+router.get('/getprofile',verifyTokenEmp,async(req,res)=>{
     try{
         const User = await user.findOne({_id:req._id})
         if(User)
