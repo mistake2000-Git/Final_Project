@@ -106,22 +106,36 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Check room are available between two date
-router.patch('/checkRoom',verifyTokenEmp,async(req,res)=>{
+router.patch('/checkRoom',async(req,res)=>{
     const {Start_Date,End_Date} = req.body
     try
     {   
-        let startDate,endDate
+        console.log(new Date(Start_Date).toLocaleDateString())
+        console.log(new Date(End_Date).toLocaleDateString())
+        /*if(Start_Date!=null && End_Date!=null)
+        {
+        
+        }*/
+        let startDate = new Date(Start_Date).toLocaleDateString()
+        let endDate = new Date(Start_Date).toLocaleDateString()
         if(new Date(Start_Date).getTime()==new Date(End_Date).getTime())
         {
-            startDate = new Date(Start_Date).setHours(0,0,0)   
-            endDate = new Date(End_Date).setHours(23,59,0)
+            startDate = new Date(Start_Date)
+            startDate.setHours(0,0,0)
+            endDate = new Date(End_Date)
+            endDate.setHours(23,59,0)
         }
         else
         {
-            startDate = new Date(Start_Date).setHours(14,0,0)
-            endDate = new Date(End_Date).setHours(12,0,0)
+            startDate = new Date(Start_Date)
+            console.log(startDate)
+            startDate.setHours(14,0,0)
+            console.log(startDate)
+            endDate = new Date(End_Date)
+            endDate.setHours(12,0,0)
         }
         const Room = await room.find({},{_id:0})
+        console.log("asda")
         let arrayValidRoom = []
         for(let i=0;i<Room.length;i++)
         {
