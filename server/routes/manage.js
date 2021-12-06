@@ -87,7 +87,7 @@ router.delete('/:id',verifyToken, async(req,res)=>{
 })
 
 //update user infomation
-router.patch('/',verifyToken, async(req,res)=>{
+router.patch('/',verifyTokenEmp, async(req,res)=>{
     const {id} = req.body
     try 
     {
