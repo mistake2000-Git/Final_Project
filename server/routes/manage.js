@@ -24,7 +24,7 @@ router.get('/getprofile',verifyTokenEmp,async(req,res)=>{
 router.get('/getone/:id',verifyToken,async(req,res)=>{
     const id = req.params.id
     try{
-        const User = await user.findOne({id},{Account:0,Password:0})
+        const User = await user.findOne({id},{Password:0})
         if(User)
             return res.json(User)
         else
