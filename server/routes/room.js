@@ -87,7 +87,7 @@ router.patch('/',verifyToken, async(req,res)=>{
         const roomValues = Object.values(req.body)
         for(let i=1;i<roomProperty.length;i++)
         {
-            if(roomValues[i]!="" || roomValues[i]==null)
+            if(roomValues[i]!="" || roomValues[i]!=null)
             {
                 let property = roomProperty[i]
                 let values = roomValues[i]
