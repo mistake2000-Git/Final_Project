@@ -116,8 +116,8 @@ router.patch('/checkRoom',async(req,res)=>{
         {
         
         }*/
-        let startDate = new Date(Start_Date).toLocaleDateString()
-        let endDate = new Date(Start_Date).toLocaleDateString()
+        let startDate = new Date(req.body.Start_Date).toLocaleDateString()
+        let endDate = new Date(req.body.End_Date).toLocaleDateString()
         if(new Date(Start_Date).getTime()==new Date(End_Date).getTime())
         {
             startDate = new Date(Start_Date)
@@ -157,7 +157,7 @@ router.patch('/checkRoom',async(req,res)=>{
         }
         else
         {
-            return res.status(400).json({success:false,message:"There are no room available"})
+            return res.status(400).json([])
         }
 
     }
