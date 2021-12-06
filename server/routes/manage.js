@@ -51,7 +51,7 @@ router.get('/',verifyToken,async (req,res)=>{
 })
 //Create new user 
 router.post('/',verifyToken,async (req,res)=>{
-    const {id,Type,Name,Phone,Gender,Date_of_Birth,Address,Email,Account,Password} = req.body
+    const {id,Type,Img,Name,Phone,Gender,Date_of_Birth,Address,Email,Account,Password} = req.body
     try
     {
         const checkAccount = await user.findOne({Account})
@@ -62,7 +62,7 @@ router.post('/',verifyToken,async (req,res)=>{
 
         const passwordHash = await argon2.hash(req.body.Password)
         let newId =  await autoId(Type)
-        const User = new user({id:newId,Type,Name,Gender,Date_of_Birth,Address,Phone,Email,Account,Password:passwordHash})
+        const User = new user({id:newId,Type,Img,Name,Gender,Date_of_Birth,Address,Phone,Email,Account,Password:passwordHash})
         await User.save()
         res.json({success:true,message:"Create user successfully",User: User})
     }
