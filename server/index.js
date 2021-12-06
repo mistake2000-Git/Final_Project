@@ -39,7 +39,7 @@ app.use('/api/trans',transRouter)
 const paymentRouter = require(__dirname+'/routes/payment')
 app.use('/api/payment',paymentRouter)
 
-app.use('/docs',express.static('./public/docs'))
+app.use('/docs',express.static('./Public/docs'))
 app.get('/docs',(req,res)=>{
-  res.sendFile(__dirname+'/public/docs/index.html')
+  res.sendFile(__dirname+'/Public/docs/index.html')
 })
