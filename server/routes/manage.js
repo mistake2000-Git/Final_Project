@@ -69,7 +69,7 @@ router.post('/',verifyToken,async (req,res)=>{
     catch(error)
     {
         console.log(error.message)
-        res.json({success:false,message:"User Name or id is already exist"})
+        res.json({success:false,message:"Account or phone number is exist!"})
     }
 })
 //delete user
@@ -114,7 +114,7 @@ router.patch('/',verifyToken, async(req,res)=>{
     }
     catch(err)
     {
-        res.json({message:false,message:"Can not find the user or id input is empty!"})
+        res.status(404).json({message:false,message:"Can not find the user or id input is empty!"})
     }
 })
 

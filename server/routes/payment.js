@@ -21,7 +21,7 @@ router.get("/getone/:id",async(req,res)=>{
     catch(err)
     {
         console.log(err.message)
-        res.json({success:false,message:"Internal Error"})
+        res.status(400).json({success:false,message:"Internal Error"})
     }
 })
 //get all payment 
@@ -44,7 +44,7 @@ router.get("/",async(req,res)=>{
     catch(err)
     {
         console.log(err.message)
-        res.json({success:false,message:"Internal Error"})
+        res.status(400).json({success:false,message:"Internal Error"})
     }
 })
 module.exports= router

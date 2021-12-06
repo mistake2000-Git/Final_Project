@@ -23,7 +23,7 @@ router.get('/getone/:id',verifyToken,async(req,res)=>{
     catch(err)
     {
         console.log(err.message)
-        res.status(400).json({success:false,message:"Internal Error!"})
+        res.status(400).json({success:false,message:"Room not found or Internal Error!"})
     }
 })
 //Get all room
@@ -101,7 +101,7 @@ router.patch('/',verifyToken, async(req,res)=>{
     }
     catch(err)
     {
-        res.status(400).json({message:false,message:"Can not find the user or id input is empty!"})
+        res.status(404).json({message:false,message:"Can not find the room or id input is empty!"})
     }
 })
 
@@ -143,14 +143,14 @@ router.patch('/checkRoom',verifyTokenEmp,async(req,res)=>{
         }
         else
         {
-            return res.json({success:false,message:"There are no room available"})
+            return res.status(400).json({success:false,message:"There are no room available"})
         }
 
     }
     catch(err)
     {
         console.log(err.message)
-        res.status(400).json({success:false,message:"Internal Error"})
+        res.status(404).json({success:false,message:"Internal Error"})
     }
 })
 

@@ -41,7 +41,7 @@ router.post('/',verifyToken,async (req,res) => {
     catch(err)
     {
         console.log(err.message )
-        res.json({success:false,message:"Internal error"})
+        res.status(400).json({success:false,message:"Internal error"})
     }
 })
 
