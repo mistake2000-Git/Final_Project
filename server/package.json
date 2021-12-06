@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "apidoc": {
+    "name":"Hotel Management Project  ",
     "title": "API DOCS",
-    "version": "0.1.0"
+    "version": "0.1.0",
+    "header": {
+      "title": "Hotel Management Project"
+    }
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

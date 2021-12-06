@@ -1,5 +1,4 @@
 const user = require('../model/user')
-const customer = require('../model/customer')
 const transaction = require('../model/transaction')
 const payment = require('../model/payment')
 
@@ -47,25 +46,6 @@ async function autoId (typeId)
                 }
                 return newId
         }
-        case 'Customer':
-            {
-                let countCus = await customer.find().countDocuments()
-                if(!countCus)
-                {
-                    newId = "CUS_01"
-                }
-                else if(countCus < 9)
-                {
-                    countCus++
-                    newId = "CUS_0" + countCus
-                }
-                else
-                {
-                    countCus++
-                    newId = "CUS_" + countCus
-                }
-                return newId
-            }
         case 'Transaction':
             {
                 let countTrans = await transaction.find().countDocuments()
