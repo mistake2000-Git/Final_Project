@@ -735,7 +735,6 @@ module.exports= router
  *          success:false,
  *          message:"Internal Error"
  *        }
- * {Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date,End_Date}
  * @apiHeader {String} Authorization=Bearer Users unique access-key. 
  * @apiBody {string} [Customer_Name] The name of customer.
  * @apiBody {int} [Customer_Id_Card] ID card of customer.
@@ -774,7 +773,7 @@ module.exports= router
 
 
 /**
- * @api {get} /api/trans/  Get all room
+ * @api {get} /api/trans/  Get all transaction
  * @apiDescription This api will return a list of transaction.
  * @apiName GetAllTransaction
  * @apiGroup Transaction
