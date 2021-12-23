@@ -48,10 +48,18 @@ router.get('/getCustomerTrans/:phoneNumber',async(req,res)=>{
     const Phone_Number = req.params.phoneNumber
     try
     {
-        const TransList = await trans.find({Phone_Number})
-        if(TransList)
+        const transList = await trans.find({Phone_Number})
+        if(transList)
         {
-            res.json(TransList)
+            for(let i=0;i<transList.length;i++)
+            {
+                transList[i] = JSON.stringify(transList[i])
+                transList[i]= JSON.parse(transList[i])
+                transList[i].Start_Date_Formatted = new Date(transList[i].Start_Date).toLocaleString()
+                transList[i].End_Date_Formatted = new Date (transList[i].End_Date).toLocaleString()
+                transList[i].Create_Date_Formatted = new Date(transList[i].Create_Date).toLocaleString()
+            }
+            res.json(transList)
         }
     }
     catch(err)
@@ -66,11 +74,16 @@ router.get('/getCustomerPays/:phoneNumber',async(req,res)=>{
     const Phone_Number = req.params.phoneNumber
     try{
         const Customer = await customer.findOne({Phone_Number})
-        console.log(Customer)
         const Customer_Id_Card = Customer.Customer_Id_Card
         const Payments = await payment.find({Customer_Id_Card:Customer_Id_Card})
         if(Payments)
         {
+            for(let i = 0;i<Payments.length;i++)
+            {
+                Payments[i] = JSON.stringify(Payments[i])
+                Payments[i] = JSON.parse(Payments[i])
+                Payments[i].Create_Date_Formatted = new Date(Payments[i].Create_Date).toLocaleString()
+            }
             res.json(Payments)
         }
     }
