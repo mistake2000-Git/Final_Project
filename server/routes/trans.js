@@ -7,7 +7,7 @@ const payment = require('../model/payment')
 const verifyToken = require('../middleware/auth')
 const autoId = require('../middleware/autoId')
 const checkDate = require('../function/checkDate')
-
+const customer = require('../model/customer')
 
 //create transaction
 router.post('/',verifyToken,async (req,res) => {
@@ -33,8 +33,16 @@ router.post('/',verifyToken,async (req,res) => {
         }*/
         const newTrans = new trans ({
         id:newTransId,Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date:newStartDate,End_Date:newEndDate,Last_Update_Id:findUser.id})
-        await newTrans.save()
+        
         await room.findOneAndUpdate({id:req.body.Room_Num},{Status:"Booked"})
+        const Customer = await customer.findOne({Customer_Id_Card})
+        if(!Customer)
+        { 
+            const cusId = await autoId('Customer')
+            const newCustomer = new customer({id:cusId,Customer_Name,Customer_Id_Card,Phone_Number})
+            await newCustomer.save()
+        }
+        await newTrans.save()
         res.json({success:true,message:"Create transaction successfully!"})
     }
     catch(err)
