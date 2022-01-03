@@ -1,6 +1,6 @@
 const express=require('express')
 const mongoose = require('mongoose')
-const authRouter = require(__dirname+'/routes/auth')
+const authRouter = require(__dirname+'/controller/auth')
 
 const URL = 'mongodb+srv://admin:cRH5G-9%21%23AX8c9%24@webapp.mfwqf.mongodb.net/Hotel_Management?authSource=admin&replicaSet=atlas-angb4h-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true'
 const PORT = process.env.PORT||5000
@@ -28,18 +28,18 @@ connectDB()
 app.use(express.json())
 
 app.use('/api/auth',authRouter)
-const manageRouter = require(__dirname+'/routes/manage')
+const manageRouter = require(__dirname+'/controller/manage')
 app.use('/api/manage',manageRouter)
-const roomRouter = require(__dirname+'/routes/room')
+const roomRouter = require(__dirname+'/controller/room')
 app.use('/api/room',roomRouter)
 
-const transRouter = require(__dirname+'/routes/trans')
+const transRouter = require(__dirname+'/controller/trans')
 app.use('/api/trans',transRouter)
 
-const paymentRouter = require(__dirname+'/routes/payment')
+const paymentRouter = require(__dirname+'/controller/payment')
 app.use('/api/payment',paymentRouter)
 
-const customerRouter = require(__dirname+'/routes/customer')
+const customerRouter = require(__dirname+'/controller/customer')
 app.use('/api/customer',customerRouter)
 
 app.use('/docs',express.static('./Public/docs'))
