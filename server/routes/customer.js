@@ -8,7 +8,7 @@ const trans = require('../model/transaction')
 const payment = require('../model/payment')
 
 //Get all customer
-router.get('/',async(req,res)=>
+router.get('/',async function getCustomers (req,res)
 {
     try
     {   
@@ -26,7 +26,8 @@ router.get('/',async(req,res)=>
 })
 
 //Get one customer
-router.get('/getone/:phoneNumber',async(req,res)=>{
+router.get('/getone/:phoneNumber',async function getOneCustomer (req,res)
+{
     const Phone_Number = req.params.phoneNumber
     try
     {
@@ -44,7 +45,8 @@ router.get('/getone/:phoneNumber',async(req,res)=>{
 })
 
 //Get transaction of customer
-router.get('/getCustomerTrans/:phoneNumber',async(req,res)=>{
+router.get('/getCustomerTrans/:phoneNumber',async function getCustomerTransaction(req,res)
+{
     const Phone_Number = req.params.phoneNumber
     try
     {
@@ -70,7 +72,8 @@ router.get('/getCustomerTrans/:phoneNumber',async(req,res)=>{
 })
 
 //Get payment of customer
-router.get('/getCustomerPays/:phoneNumber',async(req,res)=>{
+router.get('/getCustomerPays/:phoneNumber',async function getCustomerPayment(req,res)
+{
     const Phone_Number = req.params.phoneNumber
     try{
         const Customer = await customer.findOne({Phone_Number})

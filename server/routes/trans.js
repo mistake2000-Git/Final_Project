@@ -10,7 +10,8 @@ const checkDate = require('../function/checkDate')
 const customer = require('../model/customer')
 
 //create transaction
-router.post('/',verifyToken,async (req,res) => {
+router.post('/',verifyToken,async function createTransaction(req,res)
+{
     const {Customer_Name,Customer_Id_Card,Phone_Number,Room_Num,Start_Date,End_Date}=req.body
     try
     {
@@ -79,7 +80,8 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 */
 // Delete transactions
-router.delete('/:id',verifyToken,async (req,res)=>{
+router.delete('/:id',verifyToken,async function deleteTransaction(req,res)
+{
     try
     {
         await trans.findOneAndDelete({id:req.params.id})
@@ -92,7 +94,8 @@ router.delete('/:id',verifyToken,async (req,res)=>{
     }
 })
 //Get all transaction
-router.get('/',verifyToken, async (req,res)=>{
+router.get('/',verifyToken, async function getAllTransaction(req,res)
+{
     try
     {
         const transList = await trans.find()
@@ -117,7 +120,8 @@ router.get('/',verifyToken, async (req,res)=>{
     }
 })
 //Get one transation 
-router.get('/getone/:id',async(req,res)=>{
+router.get('/getone/:id',async function getOneTransaction(req,res)
+{
     const id = req.params.id
     try
     {
@@ -137,7 +141,8 @@ router.get('/getone/:id',async(req,res)=>{
 })
 
 //customer check in 
-router.patch('/check-in',verifyToken,async (req,res)=>{
+router.patch('/check-in',verifyToken,async function checkInCustomer(req,res)
+{
     const {id,Customer_Id_Card,Start_Date,End_Date,Room_Num} = req.body
     try
     {
@@ -176,7 +181,8 @@ router.patch('/check-in',verifyToken,async (req,res)=>{
 
 
 //Show check-out payment of customer
-router.patch('/check-out',verifyToken,async (req,res)=>{
+router.patch('/check-out',verifyToken,async function displayPayment(req,res)
+{
     const {id,Room_Num,Payment_Id,Start_Date,End_Date} = req.body
     try
     {
@@ -257,7 +263,8 @@ router.patch('/check-out',verifyToken,async (req,res)=>{
     }
 })
 // customer pay bills and check out 
-router.patch('/pay',verifyToken,async (req,res)=>{
+router.patch('/pay',verifyToken,async function checkOut(req,res)
+{
     const{id,Payment_Id,Payment_Method,Room_Num} = req.body
     try{
         const transaction = await trans.findOne({id})
@@ -287,7 +294,8 @@ router.patch('/pay',verifyToken,async (req,res)=>{
 
 
 //cancel transaction 
-router.patch('/cancel/:id',async(req,res)=>{
+router.patch('/cancel/:id',async function cancelTransaction(req,res)
+{
     const id = req.params.id
     try
     {

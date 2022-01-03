@@ -22,7 +22,8 @@ const createadmin = async ()=>{
 }
 createadmin()*/
 
-router.post('/login',async (req,res)=>{
+router.post('/login',async function login(req,res)
+{
     const {Account,Password}= req.body
     if(!Account||!Password)
     {

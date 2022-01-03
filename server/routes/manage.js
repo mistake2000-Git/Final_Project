@@ -6,7 +6,8 @@ const verifyToken = require('../middleware/authadmin');
 const autoId = require('../middleware/autoId');
 const verifyTokenEmp = require('../middleware/auth')
 //Get profile
-router.get('/getprofile',verifyTokenEmp,async(req,res)=>{
+router.get('/getprofile',verifyTokenEmp,async function getUserProfile(req,res)
+{
     try{
         const User = await user.findOne({_id:req._id})
         if(User)
@@ -21,7 +22,8 @@ router.get('/getprofile',verifyTokenEmp,async(req,res)=>{
     }
 })
 //Get one user
-router.get('/getone/:id',verifyToken,async(req,res)=>{
+router.get('/getone/:id',verifyToken,async function getOneUser(req,res)
+{
     const id = req.params.id
     try{
         const User = await user.findOne({id},{Password:0})
@@ -37,7 +39,8 @@ router.get('/getone/:id',verifyToken,async(req,res)=>{
     }
 })
 //Get all user
-router.get('/',verifyToken,async (req,res)=>{
+router.get('/',verifyToken,async function getAllUser(req,res)
+{
     try
     {
         const User = await user.find()
@@ -50,7 +53,8 @@ router.get('/',verifyToken,async (req,res)=>{
     }
 })
 //Create new user 
-router.post('/',verifyToken,async (req,res)=>{
+router.post('/',verifyToken,async function createUser (req,res)
+{
     const {id,Type,Img,Name,Phone,Gender,Date_of_Birth,Address,Email,Account,Password} = req.body
     try
     {
@@ -73,7 +77,8 @@ router.post('/',verifyToken,async (req,res)=>{
     }
 })
 //delete user
-router.delete('/:id',verifyToken, async(req,res)=>{
+router.delete('/:id',verifyToken, async function deleteUser(req,res)
+{
     const id = req.params.id
     try{
         await user.findOneAndDelete({id:id})
@@ -87,7 +92,8 @@ router.delete('/:id',verifyToken, async(req,res)=>{
 })
 
 //update user infomation
-router.patch('/',verifyTokenEmp, async(req,res)=>{
+router.patch('/',verifyTokenEmp, async function updateUserInfo(req,res)
+{
     const {id} = req.body
     try 
     {

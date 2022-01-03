@@ -9,7 +9,8 @@ const autoId = require('../middleware/autoId')
 const { create } = require('../model/room')
 
 //Get one room
-router.get('/getone/:id',verifyToken,async(req,res)=>{
+router.get('/getone/:id',verifyToken,async function getOneRoom(req,res)
+{
     const id = req.params.id
     try
     {
@@ -27,7 +28,8 @@ router.get('/getone/:id',verifyToken,async(req,res)=>{
     }
 })
 //Get all room
-router.get('/',verifyTokenEmp,async (req,res)=>{
+router.get('/',verifyTokenEmp,async function getAllRoom(req,res)
+{
     try
     {
         const Room = await room.find()
@@ -40,7 +42,8 @@ router.get('/',verifyTokenEmp,async (req,res)=>{
     }
 })
 //Add new room
-router.post('/',verifyToken, async (req,res)=>{
+router.post('/',verifyToken, async function addNewRoom(req,res)
+{
     const {id,Room_Name,Price_per_Hour,Price_per_Night,Price_per_Day,Status}= req.body
     try 
     {
@@ -59,7 +62,8 @@ router.post('/',verifyToken, async (req,res)=>{
 
 
 //Delete room
-router.delete('/:id',verifyToken,async (req,res)=>{
+router.delete('/:id',verifyToken,async function deleteRoom(req,res)
+{
     try
     {
         const checkDelete = await room.findOneAndDelete({id:req.params.id})
@@ -74,7 +78,8 @@ router.delete('/:id',verifyToken,async (req,res)=>{
 })
 
 //Update room
-router.patch('/',verifyToken, async(req,res)=>{
+router.patch('/',verifyToken, async function updateRoom(req,res)
+{
     const {id} = req.body
     try 
     {
@@ -106,7 +111,8 @@ router.patch('/',verifyToken, async(req,res)=>{
 })
 
 // Check room are available between two date
-router.patch('/checkRoom',async(req,res)=>{
+router.patch('/checkRoom',async function checkRoom(req,res)
+{
     const {Start_Date,End_Date} = req.body
     try
     {   

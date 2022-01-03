@@ -3,7 +3,8 @@ const router = express.Router()
 const payment = require("../model/payment")
 
 //get one payment
-router.get("/getone/:id",async(req,res)=>{
+router.get("/getone/:id",async function getOnePayment(req,res)
+{
     const id = req.params.id
     try
     {
@@ -25,8 +26,10 @@ router.get("/getone/:id",async(req,res)=>{
     }
 })
 //get all payment 
-router.get("/",async(req,res)=>{
-    try{
+router.get("/",async function getAllPayment(req,res)
+{
+    try
+    {
         let Paylist = await payment.find()
         if(Paylist)
         {
